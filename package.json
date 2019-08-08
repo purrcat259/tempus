@@ -6,12 +6,17 @@
   "repository": "git@github.com:purrcat259/tempus.git",
   "author": "Simon Agius Muscat <simon@agius-muscat.net>",
   "license": "MIT",
+  "scripts": {
+    "start": "NODE_ENV=development node fuse.js"
+  },
   "dependencies": {
     "apollo-server": "^2.8.1",
+    "dotenv": "^8.0.0",
     "graphql": "^14.4.2"
   },
   "devDependencies": {
     "@types/node": "^12.7.1",
+    "eslint": "^5.0.0",
     "fuse-box": "^3.7.1",
     "typescript": "^3.5.3"
   }
