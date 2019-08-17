@@ -7,24 +7,27 @@
   "author": "Simon Agius Muscat <simon@agius-muscat.net>",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=development node fuse.js"
+    "start": "NODE_ENV=development; npx ts-node fuse.ts"
   },
   "dependencies": {
     "@types/dotenv": "^6.1.1",
     "@types/graphql": "^14.2.3",
     "apollo-server": "^2.8.1",
     "dotenv": "^8.0.0",
+    "global": "^4.4.0",
     "graphql": "^14.4.2",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.14.0",
     "sequelize-typescript": "^1.0.0-beta.4",
     "sqlite3": "^4.0.9",
+    "ts-node": "^8.3.0",
     "type-graphql": "^0.17.4"
   },
   "devDependencies": {
     "@types/node": "^12.7.1",
     "eslint": "^5.0.0",
-    "fuse-box": "^3.7.1",
+    "fuse-box": "4.0.0-alpha.72 ",
+    "opn": "^6.0.0",
     "typescript": "^3.5.3"
   }
 }

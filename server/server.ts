@@ -41,7 +41,10 @@ const main = async () => {
   await testEntry.save();
 
   const schema = await buildSchema({
-    emitSchemaFile: true,
+    emitSchemaFile: {
+      path: __dirname + '/schema.gql',
+      commentDescriptions: true
+    },
     resolvers: [EntryResolver]
   });
 
