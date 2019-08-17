@@ -8,6 +8,7 @@ class Context {
       output: 'dist/server/$name-$hash',
       target: 'server',
       entry: 'server/server.ts',
+      tsConfig: 'server/tsconfig.json',
       dependencies: { include: ['tslib'] },
       cache: {
         enabled: false,
@@ -21,7 +22,7 @@ class Context {
       output: 'dist/browser/$name-$hash',
       target: 'browser',
       entry: 'src/index.ts',
-
+      tsConfig: 'src/tsconfig.json',
       dependencies: { include: ['tslib'] },
       webIndex: {
         // publicPath: '/public',
