@@ -11,4 +11,10 @@ export default class EntryResolver {
     }
     return entry;
   }
+
+  @Query(() => [Entry])
+  public async allEntries(): Promise<Entry[]> {
+    const entries = await Entry.findAll();
+    return entries;
+  }
 }
