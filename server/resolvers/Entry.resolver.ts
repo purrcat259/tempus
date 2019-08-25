@@ -1,5 +1,6 @@
-import { Resolver, Query } from 'type-graphql';
-import Entry from '../models/Entry';
+import { Resolver, Query, Mutation, Arg, Ctx } from 'type-graphql';
+import Entry, { AddEntryInput } from '../models/Entry';
+import { Context } from 'apollo-server-core';
 
 @Resolver(of => Entry)
 export default class EntryResolver {
@@ -17,4 +18,7 @@ export default class EntryResolver {
     const entries = await Entry.findAll();
     return entries;
   }
+
+  @Mutation()
+  public async insertEvent(@Arg('data') newEntryData: AddEntryInput, @Ctx() ctx: Context): Entry {}
 }

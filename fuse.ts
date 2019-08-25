@@ -21,7 +21,7 @@ class Context {
     return fusebox({
       output: 'dist/browser/$name-$hash',
       target: 'browser',
-      entry: 'src/index.ts',
+      entry: 'src/index.tsx',
       tsConfig: 'src/tsconfig.json',
       dependencies: { include: ['tslib'] },
       webIndex: {
@@ -76,8 +76,8 @@ task('preview', async ctx => {
   await browser.runProd({ uglify: true, manifest: true });
 
   const server = ctx.getServerConfig();
-  const response = await server.runProd({ uglify: false, manifest: true });
-  response.launcher.start();
+  await server.runProd({ uglify: false, manifest: true });
+  // response.launcher.start();
 });
 task('dist', async ctx => {
   ctx.runServer = false;
