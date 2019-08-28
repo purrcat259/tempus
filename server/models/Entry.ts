@@ -1,9 +1,10 @@
 import { Table, Column, Model, PrimaryKey, DataType, AutoIncrement } from 'sequelize-typescript';
 import { ObjectType, Field, InputType } from 'type-graphql';
+import IEntry from '../interfaces/Entry';
 
 @ObjectType()
 @Table
-export default class Entry extends Model<Entry> {
+export default class Entry extends Model<Entry> implements IEntry {
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)

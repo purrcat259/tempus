@@ -3,8 +3,10 @@ import * as React from 'react';
 import Button from '@material-ui/core/Button';
 import { Container, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
+import IEntry from '../../server/interfaces/Entry';
+
 export default () => {
-  const entries: any[] = [{ id: 1, day: new Date(), start: new Date() }];
+  const entries: IEntry[] = [{ id: 1, day: new Date(), start: new Date() }];
 
   return (
     <Container>
@@ -27,7 +29,7 @@ export default () => {
               <TableRow key={entry.id}>
                 <TableCell>{entry.id}</TableCell>
                 <TableCell>{entry.day.toISOString()}</TableCell>
-                <TableCell>{entry.start.toISOString()}</TableCell>
+                <TableCell>{entry.start ? entry.start.toISOString() : '?'}</TableCell>
                 <TableCell>{entry.end ? entry.end.toISOString() : '?'}</TableCell>
               </TableRow>
             ))}
