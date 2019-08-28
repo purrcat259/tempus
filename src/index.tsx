@@ -1,13 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Button from '@material-ui/core/Button';
+import HomeScreen from './screens/HomeScreen';
 
 function App() {
-  return (
-    <Button variant="contained" color="primary">
-      Hello World
-    </Button>
-  );
+  return <HomeScreen />;
 }
 
 ReactDOM.render(<App />, document.querySelector('#app'));
