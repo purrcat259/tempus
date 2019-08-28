@@ -5,6 +5,7 @@ import IEntry from '../interfaces/Entry';
 @ObjectType()
 @Table
 export default class Entry extends Model<Entry> implements IEntry {
+  @Field({ description: 'Entry Unique ID' })
   @PrimaryKey
   @AutoIncrement
   @Column(DataType.INTEGER)

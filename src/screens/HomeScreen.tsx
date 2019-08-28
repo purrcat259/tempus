@@ -1,20 +1,47 @@
 import * as React from 'react';
 
-import Button from '@material-ui/core/Button';
-import { Container, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
+import {
+  Container,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  CircularProgress
+} from '@material-ui/core';
 
+import { gql } from 'apollo-boost';
 import IEntry from '../../server/interfaces/Entry';
+import { useQuery } from '@apollo/react-hooks';
+
+import moment from 'moment';
+
+const allEntriesQuery = gql`
+  {
+    allEntries {
+      id
+      day
+      start
+      end
+    }
+  }
+`;
 
 export default () => {
-  const entries: IEntry[] = [{ id: 1, day: new Date(), start: new Date() }];
+  const { loading, error, data } = useQuery(allEntriesQuery);
+  if (loading) {
+    return <CircularProgress />;
+  }
+  if (error) {
+    return <p>{error}</p>;
+  }
+  const rows: IEntry[] = data.allEntries.map((entry: any) => entry as IEntry);
 
   return (
     <Container>
       <Paper style={{ padding: '2em' }}>
         <h1>Tempus</h1>
-        <Button variant="contained" color="primary">
-          Hello World
-        </Button>
         <Table>
           <TableHead>
             <TableRow>
@@ -25,12 +52,12 @@ export default () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {entries.map(entry => (
+            {rows.map(entry => (
               <TableRow key={entry.id}>
                 <TableCell>{entry.id}</TableCell>
-                <TableCell>{entry.day.toISOString()}</TableCell>
-                <TableCell>{entry.start ? entry.start.toISOString() : '?'}</TableCell>
-                <TableCell>{entry.end ? entry.end.toISOString() : '?'}</TableCell>
+                <TableCell>{moment(entry.day).format('DD/MM/YYYY')}</TableCell>
+                <TableCell>{entry.start ? moment(entry.start).format('HH:mm') : '?'}</TableCell>
+                <TableCell>{entry.end ? moment(entry.end).format('HH:mm') : '?'}</TableCell>
               </TableRow>
             ))}
           </TableBody>
