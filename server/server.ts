@@ -37,11 +37,13 @@ const main = async () => {
   sequelize.addModels([Entry]);
   await sequelize.sync({ force: true });
 
-  let testEntry = new Entry({ day: new Date(), start: new Date() });
+  const now = new Date();
+  const later = new Date().setHours(now.getHours() + 2);
+  const tomorrow = new Date().setDate(now.getDate() + 1);
+
+  let testEntry = new Entry({ day: now, start: now, end: later });
   await testEntry.save();
-  testEntry = new Entry({ day: new Date() });
-  await testEntry.save();
-  testEntry = new Entry({ day: new Date() });
+  testEntry = new Entry({ day: tomorrow });
   await testEntry.save();
 
   const schema = await buildSchema({
