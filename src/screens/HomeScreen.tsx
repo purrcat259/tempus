@@ -1,40 +1,42 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 
-import { Container, Paper, CircularProgress } from '@material-ui/core';
+import { Grid, Paper } from '@material-ui/core';
 
-import { gql } from 'apollo-boost';
-import IEntry from '../../server/interfaces/Entry';
-import { useQuery } from '@apollo/react-hooks';
+import MonthCard from '../components/MonthCard/MonthCard';
+import MonthEntries from '../components/MonthEntries/MonthEntries';
 
-import EntriesTable from '../components/EntriesTable/EntriesTable';
+// TODO: Declare as constant
+const monthNumbers: number[] = [];
 
-const allEntriesQuery = gql`
-  {
-    allEntries {
-      id
-      day
-      start
-      end
-    }
-  }
-`;
+for (let i = 1; i <= 12; i++) {
+  monthNumbers.push(i);
+}
 
 export default () => {
-  const { loading, error, data } = useQuery(allEntriesQuery);
-  if (loading) {
-    return <CircularProgress />;
-  }
-  if (error) {
-    return <p>{error}</p>;
-  }
-  const rows: IEntry[] = data.allEntries.map((entry: any) => entry as IEntry);
-
+  const [month, setMonth] = useState(1);
   return (
-    <Container>
-      <Paper style={{ padding: '2em' }}>
-        <h1>Tempus</h1>
-        <EntriesTable entries={rows} />
-      </Paper>
-    </Container>
+    <div style={{ flexGrow: 1 }}>
+      <Grid container>
+        <Grid item xs={2}>
+          {monthNumbers.map((monthNum: number) => (
+            <Grid item xs key={`month-grid-${monthNum}`}>
+              <MonthCard month={monthNum} onSetMonth={() => setMonth(monthNum)} />
+            </Grid>
+          ))}
+        </Grid>
+        <Grid item xs={10}>
+          <Paper
+            style={{
+              height: '100%',
+              marginLeft: '1em',
+              padding: '2em'
+            }}
+          >
+            <MonthEntries month={month} />
+          </Paper>
+        </Grid>
+      </Grid>
+    </div>
   );
 };

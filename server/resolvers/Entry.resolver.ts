@@ -1,6 +1,8 @@
 import { Resolver, Query, Mutation, Arg, Ctx } from 'type-graphql';
 import Entry, { AddEntryInput } from '../models/Entry';
 import { Context } from 'apollo-server-core';
+import * as sequelize from 'sequelize';
+import { padMonthNum } from '../util';
 
 @Resolver(of => Entry)
 export default class EntryResolver {
@@ -19,6 +21,21 @@ export default class EntryResolver {
     return entries;
   }
 
-  @Mutation()
-  public async insertEvent(@Arg('data') newEntryData: AddEntryInput, @Ctx() ctx: Context): Entry {}
+  @Query(() => [Entry])
+  public async entriesByMonth(
+    @Arg('month') month: number // TODO: validate
+  ): Promise<Entry[]> {
+    const paddedMonth: string = padMonthNum(month);
+    const entries = await Entry.findAll({
+      // Issue:
+      // https://github.com/sequelize/sequelize/issues/11241
+      // @ts-ignore.
+      where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('day')), paddedMonth)
+      // where: sequelize.where(sequelize.fn('month', sequelize.col('day')), month)
+    });
+    return entries;
+  }
+
+  // @Mutation()
+  // public async insertEvent(@Arg('data') newEntryData: AddEntryInput, @Ctx() ctx: Context): Entry {}
 }
