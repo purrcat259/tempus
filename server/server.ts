@@ -38,8 +38,12 @@ const main = async () => {
   await sequelize.sync({ force: true });
 
   const now = new Date();
-  const later = new Date().setHours(now.getHours() + 2);
-  const tomorrow = new Date().setDate(now.getDate() + 1);
+  const later = new Date();
+  later.setHours(later.getHours() + 2);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  console.log(now, later, tomorrow);
 
   let testEntry = new Entry({ day: now, start: now, end: later });
   await testEntry.save();
