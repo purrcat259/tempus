@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
+import { Table, TableHead, TableRow, TableCell, TableBody, List, ListItem } from '@material-ui/core';
 
 import IEntry from '../../../server/interfaces/Entry';
 import moment from 'moment';
@@ -21,7 +21,6 @@ export default (props: IProps) => {
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>ID</TableCell>
           <TableCell>Day</TableCell>
           <TableCell>Start</TableCell>
           <TableCell>End</TableCell>
@@ -29,25 +28,24 @@ export default (props: IProps) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {Array.from(entriesByDate).map(([day, entries]) => entries.map((entry: IEntry) => getRow({ entry })))}
+        {Array.from(entriesByDate).map(([day, entries]) => (
+          <TableRow>
+            {/* entries.map((entry: IEntry) => (<TableCell rowSpan={entries.length}>{day}th</TableCell>
+            <TableCell align="center" colSpan={3}>
+              Test
+            </TableCell>
+            )) */}
+            <TableCell rowSpan={entries.length}>DAY {day}</TableCell>
+            <TableCell colSpan={3}>
+              {entries.map((entry: IEntry) => (
+                <TableRow>
+                  <TableCell align="center">Test</TableCell>
+                </TableRow>
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
-  );
-};
-
-const getRow = (props: { entry: IEntry }) => {
-  const entry = props.entry;
-  return (
-    <TableRow key={entry.id}>
-      <TableCell>{entry.id}</TableCell>
-      <TableCell>{moment(entry.start).format('Do MMMM')}</TableCell>
-      <TableCell>{entry.start ? moment(entry.start).format('HH:mm') : '?'}</TableCell>
-      <TableCell>{entry.end ? moment(entry.end).format('HH:mm') : '?'}</TableCell>
-      <TableCell>
-        {entry.start && entry.end
-          ? `${moment.duration(moment(entry.end).diff(moment(entry.start))).asHours()} Hours`
-          : 'N/A'}
-      </TableCell>
-    </TableRow>
   );
 };
