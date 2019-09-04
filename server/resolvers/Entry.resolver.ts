@@ -1,10 +1,9 @@
-import { Resolver, Query, Mutation, Arg, Ctx } from 'type-graphql';
-import Entry, { AddEntryInput } from '../models/Entry';
-import { Context } from 'apollo-server-core';
+import { Resolver, Query, Arg } from 'type-graphql';
+import Entry from '../models/Entry';
 import * as sequelize from 'sequelize';
 import { padMonthNum } from '../util';
 
-@Resolver(of => Entry)
+@Resolver(() => Entry)
 export default class EntryResolver {
   @Query(() => Entry)
   public async entry(): Promise<Entry> {
@@ -33,6 +32,7 @@ export default class EntryResolver {
       where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('start')), paddedMonth)
       // where: sequelize.where(sequelize.fn('month', sequelize.col('day')), month)
     });
+
     return entries;
   }
 

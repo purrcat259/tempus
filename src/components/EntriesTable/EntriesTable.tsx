@@ -9,6 +9,14 @@ interface IProps {
 }
 
 export default (props: IProps) => {
+  // Collate entries by day
+  const entriesByDate: Map<number, IEntry[]> = new Map<number, IEntry[]>();
+  props.entries.forEach((entry: IEntry) => {
+    const date: number = new Date(entry.start).getDate();
+    entriesByDate.get(date) === undefined
+      ? entriesByDate.set(date, [entry])
+      : (entriesByDate.get(date) as IEntry[]).push(entry);
+  });
   return (
     <Table>
       <TableHead>
@@ -21,20 +29,25 @@ export default (props: IProps) => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.entries.map(entry => (
-          <TableRow key={entry.id}>
-            <TableCell>{entry.id}</TableCell>
-            <TableCell>{moment(entry.start).format('Do MMMM')}</TableCell>
-            <TableCell>{entry.start ? moment(entry.start).format('HH:mm') : '?'}</TableCell>
-            <TableCell>{entry.end ? moment(entry.end).format('HH:mm') : '?'}</TableCell>
-            <TableCell>
-              {entry.start && entry.end
-                ? `${moment.duration(moment(entry.end).diff(moment(entry.start))).asHours()} Hours`
-                : 'N/A'}
-            </TableCell>
-          </TableRow>
-        ))}
+        {Array.from(entriesByDate).map(([day, entries]) => entries.map((entry: IEntry) => getRow({ entry })))}
       </TableBody>
     </Table>
+  );
+};
+
+const getRow = (props: { entry: IEntry }) => {
+  const entry = props.entry;
+  return (
+    <TableRow key={entry.id}>
+      <TableCell>{entry.id}</TableCell>
+      <TableCell>{moment(entry.start).format('Do MMMM')}</TableCell>
+      <TableCell>{entry.start ? moment(entry.start).format('HH:mm') : '?'}</TableCell>
+      <TableCell>{entry.end ? moment(entry.end).format('HH:mm') : '?'}</TableCell>
+      <TableCell>
+        {entry.start && entry.end
+          ? `${moment.duration(moment(entry.end).diff(moment(entry.start))).asHours()} Hours`
+          : 'N/A'}
+      </TableCell>
+    </TableRow>
   );
 };

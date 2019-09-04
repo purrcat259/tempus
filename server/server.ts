@@ -22,22 +22,26 @@ const env: Env = {
   playground: process.env.APOLLO_PLAYGROUND ? true : false
 };
 
-// const GQLPATH = '/graphql';
-
 const main = async () => {
   await initDB();
 
   const now = new Date();
   const later = new Date();
+  const afterLunch = new Date();
+  const headingHome = new Date();
   later.setHours(later.getHours() + 2);
+  afterLunch.setHours(later.getHours() + 1);
+  headingHome.setHours(afterLunch.getHours() + 4);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   console.log(now, later, tomorrow);
 
-  let testEntry = new Entry({ start: now, end: later });
+  let testEntry = new Entry({ start: now, end: later, type: 'work' });
   await testEntry.save();
-  testEntry = new Entry({ start: tomorrow });
+  testEntry = new Entry({ start: afterLunch, end: headingHome, type: 'work' });
+  await testEntry.save();
+  testEntry = new Entry({ start: tomorrow, type: 'holiday' });
   await testEntry.save();
 
   const schema = await buildSchema({
