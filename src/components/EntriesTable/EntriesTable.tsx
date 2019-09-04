@@ -24,7 +24,7 @@ export default (props: IProps) => {
         {props.entries.map(entry => (
           <TableRow key={entry.id}>
             <TableCell>{entry.id}</TableCell>
-            <TableCell>{moment(entry.day).format('DD/MM/YYYY')}</TableCell>
+            <TableCell>{moment(entry.start).format('Do MMMM')}</TableCell>
             <TableCell>{entry.start ? moment(entry.start).format('HH:mm') : '?'}</TableCell>
             <TableCell>{entry.end ? moment(entry.end).format('HH:mm') : '?'}</TableCell>
             <TableCell>

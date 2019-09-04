@@ -9,8 +9,8 @@ const sequelize = new Sequelize({
   storage: ':memory:'
 });
 
-export default () => {
+export default async () => {
   sequelize.addModels([Entry]);
-  sequelize.sync({ force: true });
+  await sequelize.sync({ force: true });
   return sequelize;
 };

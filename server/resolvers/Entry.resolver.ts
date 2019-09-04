@@ -30,7 +30,7 @@ export default class EntryResolver {
       // Issue:
       // https://github.com/sequelize/sequelize/issues/11241
       // @ts-ignore.
-      where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('day')), paddedMonth)
+      where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('start')), paddedMonth)
       // where: sequelize.where(sequelize.fn('month', sequelize.col('day')), month)
     });
     return entries;

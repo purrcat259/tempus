@@ -11,13 +11,9 @@ export default class Entry extends Model<Entry> implements IEntry {
   @Column(DataType.INTEGER)
   public id!: number;
 
-  @Field({ description: 'Day of work' })
-  @Column
-  day: Date;
-
   @Field({ description: 'Start Time', nullable: true })
   @Column
-  start?: Date;
+  start: Date;
 
   @Field({ description: 'End Time', nullable: true })
   @Column

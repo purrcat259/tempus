@@ -3,10 +3,9 @@ import { ApolloServer } from 'apollo-server';
 import 'reflect-metadata';
 
 import dotenv from 'dotenv';
-// import db from './db';
+import initDB from './db';
 import { buildSchema } from 'type-graphql';
 import EntryResolver from './resolvers/Entry.resolver';
-import { Sequelize } from 'sequelize-typescript';
 import Entry from './models/Entry';
 
 dotenv.config();
@@ -26,16 +25,7 @@ const env: Env = {
 // const GQLPATH = '/graphql';
 
 const main = async () => {
-  const sequelize = new Sequelize({
-    database: 'tempus',
-    dialect: 'sqlite',
-    username: 'root',
-    password: '',
-    storage: ':memory:'
-  });
-
-  sequelize.addModels([Entry]);
-  await sequelize.sync({ force: true });
+  await initDB();
 
   const now = new Date();
   const later = new Date();
@@ -45,9 +35,9 @@ const main = async () => {
 
   console.log(now, later, tomorrow);
 
-  let testEntry = new Entry({ day: now, start: now, end: later });
+  let testEntry = new Entry({ start: now, end: later });
   await testEntry.save();
-  testEntry = new Entry({ day: tomorrow });
+  testEntry = new Entry({ start: tomorrow });
   await testEntry.save();
 
   const schema = await buildSchema({

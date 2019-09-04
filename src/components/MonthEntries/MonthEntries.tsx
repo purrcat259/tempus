@@ -15,7 +15,6 @@ const entriesByMonthQuery = gql`
   query EntriesByMonth($month: Float!) {
     entriesByMonth(month: $month) {
       id
-      day
       start
       end
     }
