@@ -23,13 +23,13 @@ export default (props: IProps) => {
     <Box>
       {Array.from(entriesByDate).map(([day, entries]) => (
         <Grid container>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Typography>Day {day}</Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={9}>
             {getList(entries)}
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={1}>
             {getAddButton(day)}
           </Grid>
         </Grid>

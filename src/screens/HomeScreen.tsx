@@ -5,6 +5,7 @@ import { Grid, Paper } from '@material-ui/core';
 
 import MonthCard from '../components/MonthCard/MonthCard';
 import MonthEntries from '../components/MonthEntries/MonthEntries';
+import Statistics from '../components/Statistics/Statistics';
 
 // TODO: Declare as constant
 const monthNumbers: number[] = [];
@@ -25,7 +26,7 @@ export default () => {
             </Grid>
           ))}
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={4}>
           <Paper
             style={{
               height: '100%',
@@ -34,6 +35,17 @@ export default () => {
             }}
           >
             <MonthEntries month={month} />
+          </Paper>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper
+            style={{
+              height: '100%',
+              marginLeft: '1em',
+              padding: '2em'
+            }}
+          >
+            <Statistics />
           </Paper>
         </Grid>
       </Grid>
