@@ -1,10 +1,10 @@
-import { ApolloServer } from 'apollo-server';
-
 import 'reflect-metadata';
-
+import { ApolloServer } from 'apollo-server';
 import * as dotenv from 'dotenv';
-import initDB from './db';
 import { buildSchema } from 'type-graphql';
+import * as TypeORM from 'typeorm';
+
+import initDB from './db';
 import EntryResolver from './resolvers/Entry.resolver';
 import Entry from './models/Entry';
 
