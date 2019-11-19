@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server';
 
 import 'reflect-metadata';
 
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import initDB from './db';
 import { buildSchema } from 'type-graphql';
 import EntryResolver from './resolvers/Entry.resolver';
@@ -61,6 +61,10 @@ const main = async () => {
   server.listen(env.port).then(({ url }) => console.log(`Server ON at: ${url}`));
 };
 
-main().catch(err => {
-  console.error(err);
-});
+(async () => {
+  try {
+    await main();
+  } catch (e) {
+    console.error(e);
+  }
+})();

@@ -62,11 +62,11 @@ const { task, exec, rm } = sparky<Context>(Context);
 
 task('default', async ctx => {
   await rm('./dist');
+
+  // const server = ctx.getServerConfig();
+  // await server.runDev();
   const browser = ctx.getBrowserConfig();
   await browser.runDev();
-
-  const server = ctx.getServerConfig();
-  await server.runDev();
 });
 
 task('preview', async ctx => {

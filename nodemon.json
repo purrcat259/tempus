@@ -1,0 +1,9 @@
+{
+  "watch": ["server"],
+  "ext": "ts",
+  "ignore": ["*.test.ts", "src/"],
+  "delay": "3",
+  "execMap": {
+    "ts": "ts-node -P server/tsconfig.json"
+  }
+}

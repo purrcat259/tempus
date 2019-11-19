@@ -2,12 +2,12 @@
   "name": "tempus",
   "version": "1.0.0",
   "description": "An online timesheet to log your work hours, useful to keep track if you work flexible hours",
-  "main": "index.js",
   "repository": "git@github.com:purrcat259/tempus.git",
   "author": "Simon Agius Muscat <simon@agius-muscat.net>",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=development; npx ts-node fuse.ts"
+    "start": "NODE_ENV=development; npx ts-node -P server/tsconfig.json server/server.ts",
+    "start:client": "NODE_ENV=development; npx ts-node fuse.ts"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.0.1",
@@ -31,7 +31,7 @@
     "sequelize": "^5.14.0",
     "sequelize-typescript": "^1.0.0-beta.4",
     "sqlite3": "^4.0.9",
-    "ts-node": "^8.3.0",
+    "ts-node": "^8.5.2",
     "type-graphql": "^0.17.4"
   },
   "devDependencies": {
@@ -39,7 +39,8 @@
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "eslint": "^5.0.0",
-    "fuse-box": "4.0.0-alpha.72",
+    "fuse-box": "@next",
+    "nodemon": "^1.19.4",
     "opn": "^6.0.0",
     "typescript": "^3.5.3"
   }
