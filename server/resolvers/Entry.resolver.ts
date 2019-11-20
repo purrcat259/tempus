@@ -2,12 +2,15 @@ import { Resolver, Query, Arg } from 'type-graphql';
 import Entry from '../models/Entry';
 import * as sequelize from 'sequelize';
 import { padMonthNum } from '../util';
+import { connection } from '../db';
 
 @Resolver(() => Entry)
 export default class EntryResolver {
+  private entryRepository = connection.getRepository(Entry);
+
   @Query(() => Entry)
   public async entry(): Promise<Entry> {
-    const entry = await Entry.findOne();
+    const entry = await this.entryRepository.findOne();
     if (!entry) {
       throw new Error('Entry not found');
     }
@@ -16,7 +19,7 @@ export default class EntryResolver {
 
   @Query(() => [Entry])
   public async allEntries(): Promise<Entry[]> {
-    const entries = await Entry.findAll();
+    const entries = await this.entryRepository.find();
     return entries;
   }
 
@@ -25,7 +28,7 @@ export default class EntryResolver {
     @Arg('month') month: number // TODO: validate
   ): Promise<Entry[]> {
     const paddedMonth: string = padMonthNum(month);
-    const entries = await Entry.findAll({
+    const entries = await this.entryRepository.find({
       // Issue:
       // https://github.com/sequelize/sequelize/issues/11241
       // @ts-ignore.

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server';
 import * as dotenv from 'dotenv';
 import { buildSchema } from 'type-graphql';
-import * as TypeORM from 'typeorm';
 
 import initDB from './db';
 import EntryResolver from './resolvers/Entry.resolver';
@@ -23,7 +22,7 @@ const env: Env = {
 };
 
 const main = async () => {
-  await initDB();
+  const connection = await initDB();
 
   const now = new Date();
   const later = new Date();
@@ -37,12 +36,18 @@ const main = async () => {
 
   console.log(now, later, tomorrow);
 
-  let testEntry = new Entry({ start: now, end: later, type: 'work' });
-  await testEntry.save();
-  testEntry = new Entry({ start: afterLunch, end: headingHome, type: 'work' });
-  await testEntry.save();
-  testEntry = new Entry({ start: tomorrow, type: 'holiday' });
-  await testEntry.save();
+  const testEntry = new Entry();
+  testEntry.start = afterLunch;
+  testEntry.end = headingHome;
+  testEntry.type = 'work';
+
+  await connection.manager.save(testEntry);
+
+  const testEntry2 = new Entry();
+  testEntry2.start = tomorrow;
+  testEntry2.type = 'holiday';
+
+  await connection.manager.save(testEntry2);
 
   const schema = await buildSchema({
     emitSchemaFile: {

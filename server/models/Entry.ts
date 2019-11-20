@@ -1,26 +1,24 @@
-import { Table, Column, Model, PrimaryKey, DataType, AutoIncrement } from 'sequelize-typescript';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ObjectType, Field, InputType } from 'type-graphql';
 import { IEntry } from '../interfaces';
 
 @ObjectType()
-@Table
-export default class Entry extends Model<Entry> implements IEntry {
+@Entity()
+export default class Entry implements IEntry {
   @Field({ description: 'Entry Unique ID' })
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.INTEGER)
+  @PrimaryGeneratedColumn()
   public id!: number;
 
   @Field({ description: 'Type of Entry' })
-  @Column
+  @Column()
   type: string;
 
   @Field({ description: 'Start Time', nullable: true })
-  @Column
+  @Column()
   start: Date;
 
   @Field({ description: 'End Time', nullable: true })
-  @Column
+  @Column({ nullable: true })
   end?: Date;
 }
 

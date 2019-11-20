@@ -1,15 +1,18 @@
 import Entry from './models/Entry';
-import { createConnection, ConnectionOptions } from 'typeorm';
+import { createConnection, ConnectionOptions, Connection } from 'typeorm';
+
+export let connection: Connection;
 
 export default async () => {
   const options: ConnectionOptions = {
     type: 'sqlite',
     database: ':memory:',
-    entities: [],
+    entities: [Entry],
+    synchronize: true,
     logging: true
   };
 
-  const connection = createConnection(options);
+  connection = await createConnection(options);
 
   return connection;
 };
