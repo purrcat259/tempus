@@ -5,9 +5,14 @@
 
 # New Entry Data
 input AddEntryInput {
-  day: DateTime!
-  start: DateTime
-  end: DateTime
+  start: DateTime!
+  type: String!
+}
+
+# Complete an existing Entry Data
+input CompleteEntryInput {
+  id: Float!
+  end: DateTime!
 }
 
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
@@ -25,6 +30,10 @@ type Entry {
 
   # End Time
   end: DateTime
+}
+
+type Mutation {
+  completeEvent(data: CompleteEntryInput!): Entry!
 }
 
 type Query {

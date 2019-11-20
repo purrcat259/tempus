@@ -25,11 +25,17 @@ export default class Entry implements IEntry {
 @InputType({ description: 'New Entry Data' })
 export class AddEntryInput implements Partial<Entry> {
   @Field()
-  day: Date;
+  start: Date;
 
-  @Field({ nullable: true })
-  start?: Date;
+  @Field()
+  type: string;
+}
 
-  @Field({ nullable: true })
-  end?: Date;
+@InputType({ description: 'Complete an existing Entry Data' })
+export class CompleteEntryInput implements Partial<Entry> {
+  @Field()
+  id: number;
+
+  @Field()
+  end: Date;
 }

@@ -1,7 +1,6 @@
-import { Resolver, Query, Arg } from 'type-graphql';
-import Entry from '../models/Entry';
-import * as sequelize from 'sequelize';
-import { padMonthNum } from '../util';
+import { Resolver, Query, Arg, Mutation } from 'type-graphql';
+import Entry, { CompleteEntryInput } from '../models/Entry';
+// import { padMonthNum } from '../util';
 import { connection } from '../db';
 
 @Resolver(() => Entry)
@@ -27,18 +26,29 @@ export default class EntryResolver {
   public async entriesByMonth(
     @Arg('month') month: number // TODO: validate
   ): Promise<Entry[]> {
-    const paddedMonth: string = padMonthNum(month);
-    const entries = await this.entryRepository.find({
-      // Issue:
-      // https://github.com/sequelize/sequelize/issues/11241
-      // @ts-ignore.
-      where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('start')), paddedMonth)
-      // where: sequelize.where(sequelize.fn('month', sequelize.col('day')), month)
-    });
+    // const paddedMonth: string = padMonthNum(month);
+    // const entries = await this.entryRepository.find({
+    //   // Issue:
+    //   // https://github.com/sequelize/sequelize/issues/11241
+    //   // @ts-ignore.
+    //   where: sequelize.where(sequelize.fn('strftime', '%m', sequelize.col('start')), paddedMonth)
+    //   // where: sequelize.where(sequelize.fn('month', sequelize.col('day')), month)
+    // });
+
+    // TODO: Implement month filter query
+    const entries = await this.entryRepository.createQueryBuilder('entry').getMany();
 
     return entries;
   }
 
-  // @Mutation()
-  // public async insertEvent(@Arg('data') newEntryData: AddEntryInput, @Ctx() ctx: Context): Entry {}
+  @Mutation(() => Entry)
+  public async completeEvent(@Arg('data') completeEntry: CompleteEntryInput): Promise<Entry> {
+    const incompleteEntry: Entry | undefined = await this.entryRepository.findOne(completeEntry.id);
+    if (incompleteEntry === undefined) {
+      throw new Error(`Entry of ID: ${completeEntry.id} does not exist`);
+    }
+    incompleteEntry.end = completeEntry.end;
+    await this.entryRepository.save(incompleteEntry);
+    return incompleteEntry;
+  }
 }

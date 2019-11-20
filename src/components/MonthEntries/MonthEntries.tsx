@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Typography, Box, CircularProgress } from '@material-ui/core';
-import EntriesTable from '../EntriesTable/EntriesTable';
 
 import { monthNameFromNumber } from '../../../server/util';
 import { useQuery } from '@apollo/react-hooks';
@@ -38,7 +37,6 @@ export default (props: IProps) => {
   return (
     <Box>
       <Typography>{monthName}</Typography>
-      {/* {rows.length > 0 ? <EntriesTable entries={rows} /> : <p>No Entries yet</p>} */}
       {rows.length > 0 ? <EntriesList entries={rows} /> : <p>No Entries yet</p>}
     </Box>
   );

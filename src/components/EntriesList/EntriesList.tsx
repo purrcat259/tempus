@@ -1,10 +1,13 @@
 import * as React from 'react';
-import { List, ListItem, Grid, Typography, Box, IconButton } from '@material-ui/core';
+import { List, ListItem, Grid, Typography, Box, IconButton, Divider } from '@material-ui/core';
 
 import IEntry from '../../../server/interfaces/Entry';
 import moment from 'moment';
 
 import AddIcon from '@material-ui/icons/Add';
+import TimerIcon from '@material-ui/icons/Timer';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
 
 interface IProps {
   entries: IEntry[];
@@ -21,18 +24,19 @@ export default (props: IProps) => {
   });
   return (
     <Box>
-      {Array.from(entriesByDate).map(([day, entries]) => (
-        <Grid container>
-          <Grid item xs={2}>
-            <Typography>Day {day}</Typography>
+      {Array.from(entriesByDate).map(([day, entries], index) => (
+        <div key={`${day}-${index}`}>
+          <Grid container>
+            <Grid item xs={3}>
+              <Typography>Day {day}</Typography>
+              {getAddButton(day)}
+            </Grid>
+            <Grid item xs={9}>
+              {getList(entries)}
+            </Grid>
           </Grid>
-          <Grid item xs={9}>
-            {getList(entries)}
-          </Grid>
-          <Grid item xs={1}>
-            {getAddButton(day)}
-          </Grid>
-        </Grid>
+          <Divider />
+        </div>
       ))}
     </Box>
   );
@@ -62,8 +66,20 @@ const getAddButton = (day: number) => {
 
 const getAddEndTimeButton = (entry: IEntry) => {
   return (
-    <IconButton aria-label="add">
-      <AddIcon />
+    <IconButton aria-label="add" onClick={() => addEndTime()}>
+      <TimerIcon />
     </IconButton>
   );
 };
+
+const completeEntryMutation = gql`
+  mutation CompleteEntry($id: Float!, $end: DateTime!) {
+    completeEvent(data: { id: $id, end: $end }) {
+      id
+      start
+      end
+    }
+  }
+`;
+
+const addEndTime = async () => {};
