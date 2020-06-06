@@ -19,7 +19,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/graphql": "^14.2.3",
     "apollo-boost": "^0.4.4",
-    "apollo-server": "^2.8.1",
+    "apollo-server": "^2.14.2",
     "dotenv": "^8.0.0",
     "global": "^4.4.0",
     "graphql": "^14.4.2",
