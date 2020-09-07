@@ -1,0 +1,41 @@
+{{define "head"}}
+<title>Tempus</title>
+{{end}}
+{{define "body"}}
+<h1>Tempus</h1>
+<h2>{{ .Data.Project.Title }}</h2>
+<div>
+    <div>
+        {{ if .Data.Project.Entries }}
+        <ul>
+            {{ range .Data.Project.Entries }}
+            <li>{{ .EntryType }}: {{ formatDate .OpenTime }}</li>
+            {{ end }}
+        </ul>
+        {{ else }}
+        <p>No Entries Yet</p>
+        {{ end }}
+    </div>
+    <div>
+        {{ if .Data.Project.EntryTypes }}
+        <div>
+            {{ range .DataProject.EntryTypes }}
+            <form action="/projects/{{ .Data.Project.ID }}/entry" method="POST">
+                <input type="submit" name="entryType" value="{{ . }}" />
+            </form>
+            {{ end }}
+        </div>
+        {{ end }}
+        <div>
+            <form action="/projects/{{ .Data.Project.ID }}/entry/types" method="POST">
+                <div class="form-group">
+                    <label for="email">New Entry Type</label>
+                    <input type="text" id="entryType" name="entryType" placeholder="Input your new entry type here">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+    <a href="/">Back to homepage</a>
+</div>
+{{end}}

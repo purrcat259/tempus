@@ -59,6 +59,7 @@ func main() {
 	// Web
 	funcs := make(map[string]interface{})
 	funcs["not"] = func(value interface{}) bool { return !value.(bool) }
+	funcs["hasItems"] = func(value []interface{}) bool { return len(value) != 0 }
 	funcs["isNil"] = func(value interface{}) bool { return value == nil }
 	funcs["formatDate"] = func(t time.Time) string {
 		return t.Format("Jan 2 15:04:05")
@@ -88,6 +89,7 @@ func main() {
 	templates["index"] = template.Must(parseFuncs().ParseFiles("public/views/index.html", "public/views/base.html"))
 	templates["login"] = template.Must(parseFuncs().ParseFiles("public/views/login.html", "public/views/base.html"))
 	templates["dashboard"] = template.Must(parseFuncs().ParseFiles("public/views/dashboard.html", "public/views/base.html"))
+	templates["project"] = template.Must(parseFuncs().ParseFiles("public/views/project.html", "public/views/base.html"))
 
 	e.Renderer = &TemplateRegistry{
 		templates: templates,
@@ -98,5 +100,8 @@ func main() {
 	e.POST("/login", web.HandleLogin)
 	e.GET("/logout", web.HandleLogout)
 	e.GET("/dashboard", web.DashboardPage)
+	e.GET("/projects/:projectID", web.ProjectPage)
+	e.POST("/projects/:projectID/entry", web.HandleNewEntry)
+	e.POST("/projects/:projectID/entry/types", web.HandleNewEntryType)
 	e.Logger.Fatal(e.Start(":1323"))
 }

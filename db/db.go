@@ -34,6 +34,10 @@ type Project struct {
 	UserID     uint
 }
 
+func (p *Project) HasEntries() bool {
+	return len(p.Entries) != 0
+}
+
 type ProjectEntryType struct {
 	gorm.Model
 	Title     string `gorm:"unique;not null"`
@@ -43,10 +47,10 @@ type ProjectEntryType struct {
 
 type ProjectEntry struct {
 	gorm.Model
-	EntryTypeID uint
-	ProjectID   uint
-	OpenTime    time.Time
-	CloseTime   *time.Time
+	EntryType string
+	ProjectID uint
+	OpenTime  time.Time
+	CloseTime *time.Time
 }
 
 func Open() {
