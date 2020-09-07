@@ -1,0 +1,24 @@
+{{define "head"}}
+<title>Tempus</title>
+{{end}}
+{{define "body"}}
+<h1>Tempus</h1>
+<div>
+    <p>This is your dashboard {{ .SessionMeta.LoggedInUser.Name }}.</p>
+    <div class="dashboard">
+        <h3>Projects</h3>
+        {{ if .Data.Projects }}
+        <ul>
+            {{ range .Data.Projects }}
+            <li>
+                {{ .Title }}
+            </li>
+            {{ end }}
+        </ul>
+        {{ else }}
+        <p>No projects yet!</p>
+        {{ end }}
+    </div>
+    <a href="/">Back to homepage</a>
+</div>
+{{end}}

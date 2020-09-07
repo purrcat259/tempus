@@ -4,18 +4,12 @@
 {{define "body"}}
 <h1>Tempus</h1>
 <div>
-    <p>Hello, Tempus!</p>
-
-    {{ if .Users }}
-    <ul>
-        {{ range .Users }}
-        <li>{{ .Name }}</li>
-        {{ end }}
-    </ul>
+    {{ if .SessionMeta.IsLoggedIn }}
+    <p>Hello {{ .SessionMeta.LoggedInUser.Name }}</p>
+    <a href="/dashboard">Go to Dashboard</a>
+    <a href="/logout">Click here to logout</a>
     {{ else }}
-    <p>
-        No Users found
-    </p>
+    <a href="/login">Click here to login</a>
     {{ end }}
 </div>
 {{end}}

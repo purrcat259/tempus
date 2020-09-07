@@ -31,6 +31,7 @@ type Project struct {
 	Title      string `gorm:"not null"`
 	Entries    []ProjectEntry
 	EntryTypes []ProjectEntryType
+	UserID     uint
 }
 
 type ProjectEntryType struct {
@@ -86,4 +87,17 @@ func Seed() {
 	if notFound {
 		DB.Create(&baseUser)
 	}
+	count := 0
+	err := DB.Model(&Project{}).Count(&count).Error
+	if err != nil {
+		panic(err)
+	}
+	if count == 0 {
+		project := Project{Title: "Test Project", UserID: 1}
+		err := DB.Create(&project).Error
+		if err != nil {
+			panic(err)
+		}
+	}
+
 }
