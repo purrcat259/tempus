@@ -5,5 +5,17 @@
 <h1>Tempus</h1>
 <div>
     <p>Hello, Tempus!</p>
+
+    {{ if .Users }}
+    <ul>
+        {{ range .Users }}
+        <li>{{ .Name }}</li>
+        {{ end }}
+    </ul>
+    {{ else }}
+    <p>
+        No Users found
+    </p>
+    {{ end }}
 </div>
 {{end}}

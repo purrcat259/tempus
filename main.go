@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"tempus/db"
 	"text/template"
 	"time"
 
@@ -31,12 +32,16 @@ func (t *TemplateRegistry) Render(w io.Writer, name string, data interface{}, c 
 	return tmpl.ExecuteTemplate(w, "base.html", data)
 }
 
-// func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-// 	return t.templates.ExecuteTemplate(w, name, data)
-// }
-
 func main() {
 
+	// DB
+
+	// db.Clear()
+	db.Open()
+	db.Seed()
+	defer db.DB.Close()
+
+	// Web
 	funcs := make(map[string]interface{})
 	funcs["isNil"] = func(value interface{}) bool { return value == nil }
 	funcs["formatDate"] = func(t time.Time) string {
@@ -51,6 +56,7 @@ func main() {
 	// Echo instance
 	e := echo.New()
 	e.Debug = true
+	e.Static("/static", "public/static")
 
 	parseFuncs := func() *template.Template {
 		return template.New("").Funcs(funcMap)
@@ -65,7 +71,13 @@ func main() {
 	}
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index", nil)
+		data := make(map[string]interface{})
+		users, err := db.GetAllUsers()
+		if err != nil {
+			return err
+		}
+		data["Users"] = users
+		return c.Render(http.StatusOK, "index", data)
 	})
 	e.Logger.Fatal(e.Start(":1323"))
 }
