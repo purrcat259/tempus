@@ -29,6 +29,12 @@ func ProjectPage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	hasOngoingEntry, ongoingEntry, err := db.GetOngoingEntry(uint(projectID))
+	if err != nil {
+		return err
+	}
 	session.Data["Project"] = project
+	session.Data["HasOngoingEntry"] = hasOngoingEntry
+	session.Data["OngoingEntry"] = ongoingEntry
 	return c.Render(http.StatusOK, "project", session)
 }

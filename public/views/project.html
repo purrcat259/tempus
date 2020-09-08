@@ -2,34 +2,54 @@
 <title>Tempus</title>
 {{end}}
 {{define "body"}}
+
+{{ $project := .Data.Project }}
+
 <h1>Tempus</h1>
-<h2>{{ .Data.Project.Title }}</h2>
+<h2>{{ $project.Title }}</h2>
 <div>
     <div>
-        {{ if .Data.Project.Entries }}
+        <h3>Entries</h3>
+        {{ if .Data.HasOngoingEntry }}
+        {{ $ongoingEntry := .Data.OngoingEntry }}
+        <div>
+            <p>You are busy on: {{ $ongoingEntry.EntryType }} which started at {{ formatDate $ongoingEntry.OpenTime }}
+            </p>
+            <form action="/projects/{{ $project.ID }}/entry/{{ $ongoingEntry.ID }}" method="POST">
+                <button type="submit" class="btn btn-primary">Complete Task {{ $ongoingEntry.EntryType }}</button>
+            </form>
+        </div>
+        {{ else }}
+        <p>You are not active on anything right now</p>
+        {{ end }}
+        {{ if $project.Entries }}
         <ul>
-            {{ range .Data.Project.Entries }}
-            <li>{{ .EntryType }}: {{ formatDate .OpenTime }}</li>
+            {{ range $project.Entries }}
+            <li>{{ .ID }} | {{ .EntryType }}: {{ formatDate .OpenTime }} {{ if .IsOngoing }}<b>(Ongoing)</b>{{ else }}
+                - {{ formatDate .CloseTime }} {{ end }}</li>
             {{ end }}
         </ul>
         {{ else }}
-        <p>No Entries Yet</p>
+        <p>You have no historic Entries yet</p>
         {{ end }}
     </div>
     <div>
-        {{ if .Data.Project.EntryTypes }}
+        <h3>Create a new Entry from these types:</h3>
+        {{ if $project.EntryTypes }}
         <div>
-            {{ range .DataProject.EntryTypes }}
-            <form action="/projects/{{ .Data.Project.ID }}/entry" method="POST">
-                <input type="submit" name="entryType" value="{{ . }}" />
+            {{ range $project.EntryTypes }}
+            <form action="/projects/{{ $project.ID }}/entry" method="POST">
+                <input type="submit" name="entryType" value="{{ .Title }}" />
             </form>
             {{ end }}
         </div>
+        {{ else }}
+        <p>No Entry Types found. Create one below.</p>
         {{ end }}
         <div>
-            <form action="/projects/{{ .Data.Project.ID }}/entry/types" method="POST">
+            <h3>Create a new Entry Type</h3>
+            <form action="/projects/{{ $project.ID }}/entry/types" method="POST">
                 <div class="form-group">
-                    <label for="email">New Entry Type</label>
                     <input type="text" id="entryType" name="entryType" placeholder="Input your new entry type here">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

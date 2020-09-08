@@ -40,7 +40,7 @@ func (p *Project) HasEntries() bool {
 
 type ProjectEntryType struct {
 	gorm.Model
-	Title     string `gorm:"unique;not null"`
+	Title     string `gorm:"not null"`
 	ProjectID uint
 	Colour    string
 }
@@ -51,6 +51,10 @@ type ProjectEntry struct {
 	ProjectID uint
 	OpenTime  time.Time
 	CloseTime *time.Time
+}
+
+func (pe *ProjectEntry) IsOngoing() bool {
+	return pe.CloseTime == nil
 }
 
 func Open() {

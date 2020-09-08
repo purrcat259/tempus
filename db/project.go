@@ -5,6 +5,14 @@ func ProjectExists(projectID uint) bool {
 	return !doesNotExist
 }
 
+func ProjectHasEntries(projectID uint) bool {
+	if !ProjectExists(projectID) {
+		return false
+	}
+	project, _ := GetProjectByID(projectID)
+	return len(project.Entries) > 0
+}
+
 func ProjectIsOwnedByUser(projectID uint, userID uint) (bool, error) {
 	var project Project
 	err := DB.Where("id = ?", projectID).Find(&project).Error
