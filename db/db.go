@@ -1,7 +1,9 @@
 package db
 
 import (
+	"fmt"
 	"log"
+	"math"
 	"os"
 	"time"
 
@@ -55,6 +57,48 @@ type ProjectEntry struct {
 
 func (pe *ProjectEntry) IsOngoing() bool {
 	return pe.CloseTime == nil
+}
+
+func (pe *ProjectEntry) TimeTaken() (float64, float64, float64) {
+	// https://stackoverflow.com/a/40262557
+	if pe.IsOngoing() {
+		return 0, 0, 0
+	}
+	diff := pe.CloseTime.Sub(pe.OpenTime)
+	hs := diff.Hours()
+	hs, mf := math.Modf(hs)
+	ms := mf * 60
+	ms, sf := math.Modf(ms)
+	ss := sf * 60
+	return hs, ms, ss
+}
+
+func (pe *ProjectEntry) TimeTakenHuman() string {
+	if pe.IsOngoing() {
+		return "Ongoing"
+	}
+	hours, minutes, seconds := pe.TimeTaken()
+	sentence := ""
+	delimiter := ""
+	hasHours := math.Floor(hours) > 0
+	hasMinutes := math.Floor(minutes) > 0
+	hasSeconds := math.Floor(seconds) > 0
+	if hasHours {
+		sentence = fmt.Sprintf("%.0f Hours", hours)
+	}
+	if hasMinutes {
+		if hasHours {
+			delimiter = ", "
+		}
+		sentence = fmt.Sprintf("%s%s%.0f Minutes", sentence, delimiter, minutes)
+	}
+	if hasSeconds {
+		if hasMinutes {
+			delimiter = ", "
+		}
+		sentence = fmt.Sprintf("%s%s%.0f Seconds", sentence, delimiter, seconds)
+	}
+	return sentence
 }
 
 func Open() {
