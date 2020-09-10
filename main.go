@@ -90,6 +90,7 @@ func main() {
 	templates["login"] = template.Must(parseFuncs().ParseFiles("public/views/login.html", "public/views/base.html"))
 	templates["dashboard"] = template.Must(parseFuncs().ParseFiles("public/views/dashboard.html", "public/views/base.html"))
 	templates["project"] = template.Must(parseFuncs().ParseFiles("public/views/project.html", "public/views/base.html"))
+	templates["entryswitch"] = template.Must(parseFuncs().ParseFiles("public/views/entryswitch.html", "public/views/base.html"))
 
 	e.Renderer = &TemplateRegistry{
 		templates: templates,
@@ -103,6 +104,7 @@ func main() {
 	e.GET("/projects/:projectID", web.ProjectPage)
 	e.POST("/projects/:projectID/entry", web.HandleNewEntry)
 	e.POST("/projects/:projectID/entry/types", web.HandleNewEntryType)
+	e.GET("/projects/:projectID/entry/switch", web.EntrySwitchPage)
 	e.POST("/projects/:projectID/entry/:entryID", web.HandleCloseEntry)
 	e.Logger.Fatal(e.Start(":1323"))
 }

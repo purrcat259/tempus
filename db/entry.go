@@ -40,3 +40,9 @@ func CloseEntry(entryID uint) error {
 	err := DB.Model(&ProjectEntry{}).Where("id = ?", entryID).Update("close_time", time.Now()).Error
 	return err
 }
+
+func GetEntriesBetweenDatetimes(projectID uint, startTime time.Time, endTime time.Time) ([]ProjectEntry, error) {
+	entries := []ProjectEntry{}
+	err := DB.Where("project_id = ? AND close_time IS NOT NULL AND open_time BETWEEN ? AND ?", projectID, startTime.Format("2006-01-02"), endTime.Format("2006-01-02")).Find(&entries).Error
+	return entries, err
+}

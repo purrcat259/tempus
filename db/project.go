@@ -30,3 +30,19 @@ func GetProjectByID(projectID uint) (Project, error) {
 	}
 	return project, nil
 }
+
+func ProjectSupportsEntryType(projectID uint, entryType string) (bool, error) {
+	project, err := GetProjectByID(uint(projectID))
+	if err != nil {
+		return false, err
+	}
+
+	// Ensure project supports given entry type
+	entryTypeSupported := false
+	for _, enabledEntryType := range project.EntryTypes {
+		if entryType == enabledEntryType.Title {
+			entryTypeSupported = true
+		}
+	}
+	return entryTypeSupported, nil
+}

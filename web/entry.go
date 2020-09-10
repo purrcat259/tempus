@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"tempus/db"
 
@@ -95,30 +96,41 @@ func HandleNewEntry(c echo.Context) error {
 		return c.Redirect(http.StatusForbidden, "/")
 	}
 
-	hasOngoingEntry, _, err := db.GetOngoingEntry(uint(projectID))
-	// hasOngoingEntry, ongoingEntry, err := db.GetOngoingEntry(uint(projectID))
+	hasOngoingEntry, ongoingEntry, err := db.GetOngoingEntry(uint(projectID))
 	if err != nil {
-		// session.Success = false
-		// session.Error = err.Error()
 		// TODO: Add flashes
 		return c.Redirect(http.StatusBadRequest, projectURL)
 	}
 
 	if hasOngoingEntry {
+
+		// BUSINESS LOGIC DECISION: You cannot start a new task of the same type for now
+		if entryType == ongoingEntry.EntryType {
+			// TODO: Add flashes
+			return c.Redirect(http.StatusFound, projectURL)
+		}
+
+		entryTypeSupported, err := db.ProjectSupportsEntryType(uint(projectID), entryType)
+
+		if err != nil {
+			// TODO: Add flashes
+			return c.Redirect(http.StatusInternalServerError, projectURL)
+		}
+
+		if !entryTypeSupported {
+			// TODO: Add flashes
+			return c.Redirect(http.StatusFound, projectURL)
+		}
+
 		// Go to switch page
+		entrySwitchURL := fmt.Sprintf("/projects/%d/entry/switch?newType=%s", projectID, url.QueryEscape(entryType))
 
-		log.Println("Switch page")
-
-		// TODO
-
-		return c.Redirect(http.StatusFound, projectURL)
+		return c.Redirect(http.StatusFound, entrySwitchURL)
 
 	} else {
 		err := db.CreateEntry(uint(projectID), entryType)
 
 		if err != nil {
-			// session.Success = false
-			// session.Error = err.Error()
 			// TODO: Add flashes
 			return c.Redirect(http.StatusBadRequest, projectURL)
 		}
@@ -176,5 +188,52 @@ func HandleCloseEntry(c echo.Context) error {
 	}
 
 	return c.Redirect(http.StatusFound, projectURL)
+}
 
+func EntrySwitchPage(c echo.Context) error {
+	// Route params: projectID
+	// Query Param: newType
+	session := fillDataFromContext(c)
+
+	if !session.IsLoggedIn {
+		return c.Redirect(http.StatusFound, "/")
+	}
+
+	projectIDParam := c.Param("projectID")
+	projcetURL := fmt.Sprintf("/projects/%s", projectIDParam)
+	encodedTargetEntryType := c.QueryParam("newType")
+
+	targetEntryType, err := url.QueryUnescape(encodedTargetEntryType)
+
+	if err != nil {
+		return c.Redirect(http.StatusBadRequest, projcetURL)
+	}
+
+	projectID, err := strconv.Atoi(projectIDParam)
+	if err != nil {
+		return err
+	}
+	userIsOwner, err := db.ProjectIsOwnedByUser(uint(projectID), session.LoggedInUser.ID)
+	if err != nil {
+		return err
+	}
+	if !userIsOwner {
+		return c.Redirect(http.StatusForbidden, "/")
+	}
+	project, err := db.GetProjectByID(uint(projectID))
+	if err != nil {
+		return err
+	}
+	hasOngoingEntry, ongoingEntry, err := db.GetOngoingEntry(uint(projectID))
+	if err != nil {
+		return err
+	}
+	if !hasOngoingEntry {
+		// No ongoing entry to switch from, go back to project page
+		return c.Redirect(http.StatusFound, projcetURL)
+	}
+	session.Data["Project"] = project
+	session.Data["OngoingEntry"] = ongoingEntry
+	session.Data["TargetEntryType"] = targetEntryType
+	return c.Render(http.StatusOK, "entryswitch", session)
 }
