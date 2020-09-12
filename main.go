@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"io"
+	"log"
 	"math"
 	"os"
 	"tempus/db"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -42,7 +44,15 @@ var domain string
 
 func main() {
 	// Env
-	isProd = os.Getenv("tempusenv") == "production"
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+	sessionSecret := os.Getenv("TEMPUS_SESSION_SECRET")
+	if sessionSecret == "" {
+		panic("Session secret env not set")
+	}
+	isProd = os.Getenv("TEMPUS_ENV") == "production"
 	domain = "localhost"
 	if isProd {
 		domain = "tempus.simonam.dev"
@@ -77,7 +87,7 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("tempusbigmassivesecret")))) // TODO: Move secret to env
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(sessionSecret))))
 	e.Use(web.CreateTempusContextMW(domain, isProd))
 
 	parseFuncs := func() *template.Template {
@@ -108,5 +118,7 @@ func main() {
 	e.GET("/projects/:projectID/entry/switch", web.EntrySwitchPage)
 	e.POST("/projects/:projectID/entry/switch", web.HandleSwitchEntry)
 	e.POST("/projects/:projectID/entry/:entryID", web.HandleCloseEntry)
+
+	log.Printf("We in Prod? %t", isProd)
 	e.Logger.Fatal(e.Start(":1323"))
 }

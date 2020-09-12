@@ -1,3 +1,4 @@
 tempus
 data/
 !data/.gitkeep
+.env
