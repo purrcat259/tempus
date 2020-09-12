@@ -96,7 +96,7 @@ func HandleNewEntry(c echo.Context) error {
 		return c.Redirect(http.StatusForbidden, "/")
 	}
 
-	hasOngoingEntry, ongoingEntry, err := db.GetOngoingEntry(uint(projectID))
+	hasOngoingEntry, _, err := db.GetOngoingEntry(uint(projectID))
 	if err != nil {
 		// TODO: Add flashes
 		return c.Redirect(http.StatusBadRequest, projectURL)
@@ -104,11 +104,12 @@ func HandleNewEntry(c echo.Context) error {
 
 	if hasOngoingEntry {
 
-		// BUSINESS LOGIC DECISION: You cannot start a new task of the same type for now
-		if entryType == ongoingEntry.EntryType {
-			// TODO: Add flashes
-			return c.Redirect(http.StatusFound, projectURL)
-		}
+		// NEW BUSINESS LOGIC DECISION: Disabling this since we support context switches
+		// // BUSINESS LOGIC DECISION: You cannot start a new task of the same type for now
+		// if entryType == ongoingEntry.EntryType {
+		// 	// TODO: Add flashes
+		// 	return c.Redirect(http.StatusFound, projectURL)
+		// }
 
 		entryTypeSupported, err := db.ProjectSupportsEntryType(uint(projectID), entryType)
 
