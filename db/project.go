@@ -1,5 +1,7 @@
 package db
 
+import "errors"
+
 func ProjectExists(projectID uint) bool {
 	doesNotExist := DB.Where("id = ?", projectID).Find(&Project{}).RecordNotFound()
 	return !doesNotExist
@@ -45,4 +47,18 @@ func ProjectSupportsEntryType(projectID uint, entryType string) (bool, error) {
 		}
 	}
 	return entryTypeSupported, nil
+}
+
+func CreateProject(title string, ownerID uint) error {
+	if len(title) == 0 {
+		return errors.New("Project title must not be empty")
+	}
+	newProject := Project{Title: title, UserID: ownerID}
+	err := DB.Create(&newProject).Error
+	return err
+}
+
+func ProjectAlreadyExistsByTitleForUser(title string, ownerID uint) bool {
+	doesNotExist := DB.Where("title = ? AND user_id = ?", title, ownerID).Find(&Project{}).RecordNotFound()
+	return !doesNotExist
 }

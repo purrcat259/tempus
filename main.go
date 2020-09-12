@@ -101,10 +101,12 @@ func main() {
 	e.POST("/login", web.HandleLogin)
 	e.GET("/logout", web.HandleLogout)
 	e.GET("/dashboard", web.DashboardPage)
+	e.POST("/projects/new", web.HandleCreateProject)
 	e.GET("/projects/:projectID", web.ProjectPage)
 	e.POST("/projects/:projectID/entry", web.HandleNewEntry)
 	e.POST("/projects/:projectID/entry/types", web.HandleNewEntryType)
 	e.GET("/projects/:projectID/entry/switch", web.EntrySwitchPage)
+	e.POST("/projects/:projectID/entry/switch", web.HandleSwitchEntry)
 	e.POST("/projects/:projectID/entry/:entryID", web.HandleCloseEntry)
 	e.Logger.Fatal(e.Start(":1323"))
 }

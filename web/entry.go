@@ -128,7 +128,7 @@ func HandleNewEntry(c echo.Context) error {
 		return c.Redirect(http.StatusFound, entrySwitchURL)
 
 	} else {
-		err := db.CreateEntry(uint(projectID), entryType)
+		err := db.CreateEntry(db.DB, uint(projectID), entryType)
 
 		if err != nil {
 			// TODO: Add flashes
@@ -181,7 +181,7 @@ func HandleCloseEntry(c echo.Context) error {
 		return c.Redirect(http.StatusBadRequest, projectURL)
 	}
 
-	err = db.CloseEntry(uint(entryID))
+	err = db.CloseEntry(db.DB, uint(entryID))
 	if err != nil {
 		// TODO: Add flashes
 		return c.Redirect(http.StatusBadRequest, projectURL)
@@ -236,4 +236,55 @@ func EntrySwitchPage(c echo.Context) error {
 	session.Data["OngoingEntry"] = ongoingEntry
 	session.Data["TargetEntryType"] = targetEntryType
 	return c.Render(http.StatusOK, "entryswitch", session)
+}
+
+func HandleSwitchEntry(c echo.Context) error {
+	session := fillDataFromContext(c)
+	if !session.IsLoggedIn {
+		return c.Redirect(http.StatusForbidden, "/")
+	}
+
+	projectIDParam := c.Param("projectID")
+	projectURL := fmt.Sprintf("/projects/%s", projectIDParam)
+	targetEntryType := c.FormValue("TargetEntryType")
+
+	projectID, err := strconv.Atoi(projectIDParam)
+	if err != nil {
+		// TODO: Add flashes
+		return c.Redirect(http.StatusBadRequest, projectURL)
+	}
+
+	projectExists := db.ProjectExists(uint(projectID))
+	if !projectExists {
+		return c.Redirect(http.StatusBadRequest, "/")
+	}
+
+	ownedByUser, err := db.ProjectIsOwnedByUser(uint(projectID), session.LoggedInUser.ID)
+	if err != nil {
+		// TODO: Add flashes
+		return c.Redirect(http.StatusBadRequest, projectURL)
+	}
+
+	if !ownedByUser {
+		return c.Redirect(http.StatusForbidden, "/")
+	}
+
+	hasOngoingEntry, _, err := db.GetOngoingEntry(uint(projectID))
+	if err != nil {
+		// TODO: Add flashes
+		return c.Redirect(http.StatusFound, projectURL)
+	}
+
+	if !hasOngoingEntry {
+		// TODO: Add flashes
+		return c.Redirect(http.StatusFound, projectURL)
+	}
+
+	err = db.SwitchEntry(uint(projectID), targetEntryType)
+	if err != nil {
+		// TODO: Add flashes
+		return c.Redirect(http.StatusBadRequest, projectURL)
+	}
+
+	return c.Redirect(http.StatusFound, projectURL)
 }

@@ -5,7 +5,7 @@
 <h1>Tempus</h1>
 <div>
     <p>This is your dashboard {{ .SessionMeta.LoggedInUser.Name }}.</p>
-    <div class="dashboard">
+    <div>
         <h3>Projects</h3>
         {{ if .Data.Projects }}
         <ul>
@@ -18,6 +18,15 @@
         {{ else }}
         <p>No projects yet!</p>
         {{ end }}
+    </div>
+    <div>
+        <h5>Create new Project</h5>
+        <form action="/projects/new" method="POST">
+            <div class="form-group">
+                <input type="text" id="title" name="title" placeholder="Input your project's unique title here">
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
     </div>
     <a href="/">Back to homepage</a>
 </div>

@@ -38,3 +38,23 @@ func ProjectPage(c echo.Context) error {
 	session.Data["OngoingEntry"] = ongoingEntry
 	return c.Render(http.StatusOK, "project", session)
 }
+
+func HandleCreateProject(c echo.Context) error {
+	session := fillDataFromContext(c)
+	title := c.FormValue("title")
+	if !session.IsLoggedIn {
+		return c.Redirect(http.StatusFound, "/")
+	}
+
+	alreadyExists := db.ProjectAlreadyExistsByTitleForUser(title, session.LoggedInUser.ID)
+	if alreadyExists {
+		return c.Redirect(http.StatusFound, "/dashboard")
+	}
+
+	err := db.CreateProject(title, session.LoggedInUser.ID)
+	if err != nil {
+		return err
+	}
+
+	return c.Redirect(http.StatusFound, "/dashboard")
+}

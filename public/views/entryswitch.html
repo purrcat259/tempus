@@ -14,7 +14,7 @@
         {{ .Data.TargetEntryType }}?</p>
     <div style="display:flex;flex-direction: row;justify-content: space-around;">
         <form action="/projects/{{ $project.ID }}/entry/switch" method="POST">
-            <input type="submit" name="Switch" value="{{ .Data.TargetEntryType }}" />
+            <input type="submit" name="TargetEntryType" value="{{ .Data.TargetEntryType }}" />
         </form>
         <a href="/projects/{{ $project.ID }}">Do not switch, go back to project</a>
     </div>
