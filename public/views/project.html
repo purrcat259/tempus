@@ -26,7 +26,7 @@
         <ul>
             {{ range $project.Entries }}
             <li>{{ .ID }} | {{ .EntryType }}: {{ formatDate .OpenTime }} {{ if .IsOngoing }}<b>(Ongoing)</b>{{ else }}
-                - {{ formatDate .CloseTime }} | {{ .TimeTakenHuman }} {{ end }}</li>
+                - {{ formatDate .CloseTime }} | {{ .TimeTakenHuman }} {{ end }}. {{ .ContextAsText }}</li>
             {{ end }}
         </ul>
         {{ else }}

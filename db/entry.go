@@ -24,11 +24,12 @@ func GetOngoingEntry(projectID uint) (bool, *ProjectEntry, error) {
 	return true, &ongoingEntry, nil
 }
 
-func CreateEntry(db *gorm.DB, projectID uint, entryType string) error {
+func CreateEntry(db *gorm.DB, projectID uint, entryType string, startedWithContextSwitch bool) error {
 	newEntry := &ProjectEntry{
-		EntryType: entryType,
-		ProjectID: projectID,
-		OpenTime:  time.Now(),
+		EntryType:                entryType,
+		ProjectID:                projectID,
+		OpenTime:                 time.Now(),
+		StartedWithContextSwitch: startedWithContextSwitch,
 	}
 	err := db.Create(&newEntry).Error
 	return err
@@ -39,8 +40,9 @@ func EntryExists(entryID uint) bool {
 	return !doesNotExist
 }
 
-func CloseEntry(db *gorm.DB, entryID uint) error {
-	err := db.Model(&ProjectEntry{}).Where("id = ?", entryID).Update("close_time", time.Now()).Error
+func CloseEntry(db *gorm.DB, entryID uint, endedWithContextSwitch bool) error {
+	now := time.Now()
+	err := db.Model(&ProjectEntry{}).Where("id = ?", entryID).Updates(&ProjectEntry{CloseTime: &now, EndedWithContextSwitch: endedWithContextSwitch}).Error
 	return err
 }
 
@@ -50,7 +52,7 @@ func GetEntriesBetweenDatetimes(projectID uint, startTime time.Time, endTime tim
 	return entries, err
 }
 
-func SwitchEntry(projectID uint, targetEntryType string) error {
+func SwitchEntry(projectID uint, targetEntryType string, contextSwitchHappening bool) error {
 	hasOngoingEntry, ongoingEntry, err := GetOngoingEntry(projectID)
 	if err != nil {
 		return err
@@ -59,12 +61,12 @@ func SwitchEntry(projectID uint, targetEntryType string) error {
 		return errors.New("Project does not have an ongoing entry")
 	}
 	tx := DB.Begin()
-	err = CloseEntry(tx, ongoingEntry.ID)
+	err = CloseEntry(tx, ongoingEntry.ID, contextSwitchHappening)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	err = CreateEntry(tx, projectID, targetEntryType)
+	err = CreateEntry(tx, projectID, targetEntryType, contextSwitchHappening)
 	if err != nil {
 		tx.Rollback()
 		return err

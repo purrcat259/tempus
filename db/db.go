@@ -49,10 +49,12 @@ type ProjectEntryType struct {
 
 type ProjectEntry struct {
 	gorm.Model
-	EntryType string
-	ProjectID uint
-	OpenTime  time.Time
-	CloseTime *time.Time
+	EntryType                string
+	ProjectID                uint
+	OpenTime                 time.Time
+	CloseTime                *time.Time
+	EndedWithContextSwitch   bool `gorm:"default:0"`
+	StartedWithContextSwitch bool `gorm:"default:0"`
 }
 
 func (pe *ProjectEntry) IsOngoing() bool {
@@ -99,6 +101,18 @@ func (pe *ProjectEntry) TimeTakenHuman() string {
 		sentence = fmt.Sprintf("%s%s%.0f Seconds", sentence, delimiter, seconds)
 	}
 	return sentence
+}
+
+func (pe *ProjectEntry) ContextAsText() string {
+	started := "Y"
+	if !pe.StartedWithContextSwitch {
+		started = "N"
+	}
+	ended := "Y"
+	if !pe.EndedWithContextSwitch {
+		ended = "N"
+	}
+	return fmt.Sprintf("Context: [%s, %s]", started, ended)
 }
 
 func Open() {

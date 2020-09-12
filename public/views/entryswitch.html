@@ -13,8 +13,15 @@
     <p>Switch from entry (ID {{ $ongoingEntry.ID }}) {{ $ongoingEntry.EntryType }} to new entry
         {{ .Data.TargetEntryType }}?</p>
     <div style="display:flex;flex-direction: row;justify-content: space-around;">
-        <form action="/projects/{{ $project.ID }}/entry/switch" method="POST">
-            <input type="submit" name="TargetEntryType" value="{{ .Data.TargetEntryType }}" />
+        <form id="switch-form" action="/projects/{{ $project.ID }}/entry/switch" method="POST">
+            <div style="text-align: center;">
+                <label for="contextswitch"> I am making a context switch: </label>
+                <input type="checkbox" id="contextswitch" name="contextswitch" value="yes">
+            </div>
+            <br />
+            <button type="submit" form="switch-form" name="TargetEntryType"
+                value="{{ .Data.TargetEntryType }}">Yes</button>
+            <!-- <input type="submit" name="TargetEntryType" value="{{ .Data.TargetEntryType }}" /> -->
         </form>
         <a href="/projects/{{ $project.ID }}">Do not switch, go back to project</a>
     </div>

@@ -128,7 +128,7 @@ func HandleNewEntry(c echo.Context) error {
 		return c.Redirect(http.StatusFound, entrySwitchURL)
 
 	} else {
-		err := db.CreateEntry(db.DB, uint(projectID), entryType)
+		err := db.CreateEntry(db.DB, uint(projectID), entryType, false)
 
 		if err != nil {
 			// TODO: Add flashes
@@ -181,7 +181,7 @@ func HandleCloseEntry(c echo.Context) error {
 		return c.Redirect(http.StatusBadRequest, projectURL)
 	}
 
-	err = db.CloseEntry(db.DB, uint(entryID))
+	err = db.CloseEntry(db.DB, uint(entryID), false)
 	if err != nil {
 		// TODO: Add flashes
 		return c.Redirect(http.StatusBadRequest, projectURL)
@@ -247,6 +247,7 @@ func HandleSwitchEntry(c echo.Context) error {
 	projectIDParam := c.Param("projectID")
 	projectURL := fmt.Sprintf("/projects/%s", projectIDParam)
 	targetEntryType := c.FormValue("TargetEntryType")
+	isContextSwitch := len(c.FormValue("contextswitch")) != 0
 
 	projectID, err := strconv.Atoi(projectIDParam)
 	if err != nil {
@@ -280,7 +281,7 @@ func HandleSwitchEntry(c echo.Context) error {
 		return c.Redirect(http.StatusFound, projectURL)
 	}
 
-	err = db.SwitchEntry(uint(projectID), targetEntryType)
+	err = db.SwitchEntry(uint(projectID), targetEntryType, isContextSwitch)
 	if err != nil {
 		// TODO: Add flashes
 		return c.Redirect(http.StatusBadRequest, projectURL)
