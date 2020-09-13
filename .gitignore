@@ -2,3 +2,4 @@ tempus
 data/
 !data/.gitkeep
 .env
+upload.sh
