@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"math"
@@ -52,6 +53,14 @@ func main() {
 	if sessionSecret == "" {
 		panic("Session secret env not set")
 	}
+	serverPort := os.Getenv("TEMPUS_PORT")
+	if serverPort == "" {
+		panic("Server port not set")
+	}
+	adminPassword := os.Getenv("TEMPUS_ADMIN_PASSWORD")
+	if adminPassword == "" {
+		panic("Missing admin password")
+	}
 	isProd = os.Getenv("TEMPUS_ENV") == "production"
 	domain = "localhost"
 	if isProd {
@@ -63,7 +72,7 @@ func main() {
 
 	// db.Clear()
 	db.Open()
-	db.Seed()
+	db.Seed(adminPassword)
 	defer db.DB.Close()
 
 	// Web
@@ -82,7 +91,7 @@ func main() {
 
 	// Echo instance
 	e := echo.New()
-	e.Debug = true
+	e.Debug = !isProd
 	e.Static("/static", "public/static")
 	// Middleware
 	e.Use(middleware.Logger())
@@ -120,5 +129,5 @@ func main() {
 	e.POST("/projects/:projectID/entry/:entryID", web.HandleCloseEntry)
 
 	log.Printf("We in Prod? %t", isProd)
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", serverPort)))
 }
