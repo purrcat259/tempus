@@ -74,3 +74,32 @@ func SwitchEntry(projectID uint, targetEntryType string, contextSwitchHappening 
 	tx.Commit()
 	return nil
 }
+
+type ProjectWithOngoingEntry struct {
+	Project      Project
+	OngoingEntry ProjectEntry
+}
+
+func GetAllOngoingEntriesForUser(userID uint) ([]ProjectWithOngoingEntry, error) {
+	projectsWithOngoingEntry := []ProjectWithOngoingEntry{}
+	if !UserExistsByID(userID) {
+		return projectsWithOngoingEntry, errors.New("User does not exist")
+	}
+	user, err := GetUserByID(userID)
+	if err != nil {
+		return projectsWithOngoingEntry, err
+	}
+	if len(user.Projects) == 0 {
+		return projectsWithOngoingEntry, nil
+	}
+	for _, project := range user.Projects {
+		hasOngoingEntry, ongoingEntry, err := GetOngoingEntry(project.ID)
+		if err != nil {
+			return projectsWithOngoingEntry, err
+		}
+		if hasOngoingEntry {
+			projectsWithOngoingEntry = append(projectsWithOngoingEntry, ProjectWithOngoingEntry{Project: project, OngoingEntry: *ongoingEntry})
+		}
+	}
+	return projectsWithOngoingEntry, nil
+}

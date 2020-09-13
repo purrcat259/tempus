@@ -23,3 +23,8 @@ func GetUserByID(userID uint) (User, error) {
 	}
 	return user, nil
 }
+
+func UserExistsByID(userID uint) bool {
+	doesNotExist := DB.Where("id = ?", userID).Find(&User{}).RecordNotFound()
+	return !doesNotExist
+}

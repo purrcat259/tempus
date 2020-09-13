@@ -145,25 +145,24 @@ func Clear() {
 
 const isoParseFormat = "2006-01-02 15:04:05-07:00"
 
-func Seed() {
-	// TODO: set default admin password in env
-	baseUser := User{Name: "Admin", Email: "simon@agius-muscat.net", Password: "admin123"}
+func Seed(adminPassword string) {
+	baseUser := User{Name: "Admin", Email: "simon@agius-muscat.net", Password: adminPassword}
 
 	notFound := DB.Where("email = ?", baseUser.Email).Find(&User{}).RecordNotFound()
 	if notFound {
 		DB.Create(&baseUser)
 	}
-	count := 0
-	err := DB.Model(&Project{}).Count(&count).Error
-	if err != nil {
-		panic(err)
-	}
-	if count == 0 {
-		project := Project{Title: "Test Project", UserID: 1}
-		err := DB.Create(&project).Error
-		if err != nil {
-			panic(err)
-		}
-	}
+	// count := 0
+	// err := DB.Model(&Project{}).Count(&count).Error
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// if count == 0 {
+	// 	project := Project{Title: "Test Project", UserID: 1}
+	// 	err := DB.Create(&project).Error
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 }

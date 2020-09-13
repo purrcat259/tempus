@@ -20,6 +20,18 @@
         {{ end }}
     </div>
     <div>
+        {{ if .Data.ProjectsWithOngoingEntry }}
+        <h3>Your projects with an ongoing entry</h3>
+        <ul>
+            {{ range .Data.ProjectsWithOngoingEntry }}
+            <li>
+                <a href="/projects/{{ .Project.ID }}">{{ .Project.Title }}: {{ .OngoingEntry.EntryType }}</a>
+            </li>
+            {{ end }}
+        </ul>
+        {{ end }}
+    </div>
+    <div>
         <h5>Create new Project</h5>
         <form action="/projects/new" method="POST">
             <div class="form-group">
