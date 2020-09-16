@@ -11,7 +11,6 @@
 <h2>{{ $project.Title }}</h2>
 <div>
     <div>
-        <h3>Entries</h3>
         {{ if .Data.HasOngoingEntry }}
         {{ $ongoingEntry := .Data.OngoingEntry }}
         <div>
@@ -24,29 +23,6 @@
         {{ else }}
         <p>You are not active on anything right now</p>
         {{ end }}
-        {{ if $project.Entries }}
-        <ul>
-            {{ range $project.Entries }}
-            <li>{{ .ID }} | {{ .EntryType }}: {{ formatDate .OpenTime }} {{ if .IsOngoing }}<b>(Ongoing)</b>{{ else }}
-                - {{ formatDate .CloseTime }} | {{ .TimeTakenHuman }}{{ end }}. {{ .ContextAsText }}</li>
-            {{ end }}
-        </ul>
-        {{ else }}
-        <p>You have no historic Entries yet</p>
-        {{ end }}
-    </div>
-    <div>
-        <h3>Entry Statistics</h3>
-        <div>
-            <p>Today: {{ $entryStatsToday.Count }} Entries</p>
-            <p>{{ ceil $entryStatsToday.TotalTime.Hours }} Hours, {{ ceil $entryStatsToday.TotalTime.Minutes }} Minutes,
-                {{ ceil $entryStatsToday.TotalTime.Seconds }} Seconds</p>
-        </div>
-        <div>
-            <p>Whole Project: {{ $entryStatsAll.Count }} Entries</p>
-            <p>{{ ceil $entryStatsAll.TotalTime.Hours }} Hours, {{ ceil $entryStatsAll.TotalTime.Minutes }} Minutes,
-                {{ ceil $entryStatsAll.TotalTime.Seconds }} Seconds</p>
-        </div>
     </div>
     <div>
         <h3>Create a new Entry from these types:</h3>
@@ -61,15 +37,41 @@
         {{ else }}
         <p>No Entry Types found. Create one below.</p>
         {{ end }}
+    </div>
+    <div>
+        <h3>Entries</h3>
+        {{ if $project.Entries }}
+        <ul>
+            {{ range $project.Entries }}
+            <li>{{ .ID }} | {{ .EntryType }}: {{ formatDate .OpenTime }} {{ if .IsOngoing }}<b>(Ongoing)</b>{{ else }}
+                - {{ formatDate .CloseTime }} | {{ .TimeTakenHuman }}{{ end }}. {{ .ContextAsText }}</li>
+            {{ end }}
+        </ul>
+        {{ else }}
+        <p>You have no historic Entries yet</p>
+        {{ end }}
+    </div>
+    <div>
+        <h3>Entry Statistics</h3>
         <div>
-            <h3>Create a new Entry Type</h3>
-            <form action="/projects/{{ $project.ID }}/entry/types" method="POST">
-                <div class="form-group">
-                    <input type="text" id="entryType" name="entryType" placeholder="Input your new entry type here">
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <p><b>Today</b>: {{ $entryStatsToday.Count }} Entries</p>
+            <p>{{ ceil $entryStatsToday.TotalTime.Hours }} Hours, {{ ceil $entryStatsToday.TotalTime.Minutes }} Minutes,
+                {{ ceil $entryStatsToday.TotalTime.Seconds }} Seconds</p>
         </div>
+        <div>
+            <p><b>Whole Project</b>: {{ $entryStatsAll.Count }} Entries</p>
+            <p>{{ ceil $entryStatsAll.TotalTime.Hours }} Hours, {{ ceil $entryStatsAll.TotalTime.Minutes }} Minutes,
+                {{ ceil $entryStatsAll.TotalTime.Seconds }} Seconds</p>
+        </div>
+    </div>
+    <div>
+        <h3>Create a new Entry Type</h3>
+        <form action="/projects/{{ $project.ID }}/entry/types" method="POST">
+            <div class="form-group">
+                <input type="text" id="entryType" name="entryType" placeholder="Input your new entry type here">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
     </div>
     <a href="/dashboard">Back to Dashboard</a>
     <a href="/">Back to homepage</a>
