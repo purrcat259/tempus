@@ -103,3 +103,39 @@ func GetAllOngoingEntriesForUser(userID uint) ([]ProjectWithOngoingEntry, error)
 	}
 	return projectsWithOngoingEntry, nil
 }
+
+type TimeBreakdown struct {
+	Hours   float64
+	Minutes float64
+	Seconds float64
+}
+
+type EntryStatistics struct {
+	TotalTime TimeBreakdown
+	Count     int
+}
+
+func CalculateEntryStatisticsToday(entries []ProjectEntry) EntryStatistics {
+	var todayEntryStatistics []ProjectEntry
+	for _, entry := range entries {
+		if entry.OpenedToday() {
+			todayEntryStatistics = append(todayEntryStatistics, entry)
+		}
+	}
+	return CalculateEntriesStatistics(todayEntryStatistics)
+}
+
+func CalculateEntriesStatistics(entries []ProjectEntry) EntryStatistics {
+	var hours, minutes, seconds float64
+	for _, entry := range entries {
+		if !entry.IsOngoing() {
+			hh, mm, ss := entry.TimeTaken()
+			hours += hh
+			minutes += mm
+			seconds += ss
+		}
+	}
+	totalTime := TimeBreakdown{Hours: hours, Minutes: minutes, Seconds: seconds}
+	stats := EntryStatistics{TotalTime: totalTime, Count: len(entries)}
+	return stats
+}

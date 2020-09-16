@@ -4,6 +4,8 @@
 {{define "body"}}
 
 {{ $project := .Data.Project }}
+{{ $entryStatsToday := .Data.EntryStatisticsToday }}
+{{ $entryStatsAll := .Data.EntryStatisticsWholeProject }}
 
 <h1>Tempus</h1>
 <h2>{{ $project.Title }}</h2>
@@ -32,6 +34,19 @@
         {{ else }}
         <p>You have no historic Entries yet</p>
         {{ end }}
+    </div>
+    <div>
+        <h3>Entry Statistics</h3>
+        <div>
+            <p>Today: {{ $entryStatsToday.Count }} Entries</p>
+            <p>{{ ceil $entryStatsToday.TotalTime.Hours }} Hours, {{ ceil $entryStatsToday.TotalTime.Minutes }} Minutes,
+                {{ ceil $entryStatsToday.TotalTime.Seconds }} Seconds</p>
+        </div>
+        <div>
+            <p>Whole Project: {{ $entryStatsAll.Count }} Entries</p>
+            <p>{{ ceil $entryStatsAll.TotalTime.Hours }} Hours, {{ ceil $entryStatsAll.TotalTime.Minutes }} Minutes,
+                {{ ceil $entryStatsAll.TotalTime.Seconds }} Seconds</p>
+        </div>
     </div>
     <div>
         <h3>Create a new Entry from these types:</h3>

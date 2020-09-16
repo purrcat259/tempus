@@ -33,9 +33,13 @@ func ProjectPage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	entryStatisticsWholeProject := db.CalculateEntriesStatistics(project.Entries)
+	entryStatisticsToday := db.CalculateEntryStatisticsToday(project.Entries)
 	session.Data["Project"] = project
 	session.Data["HasOngoingEntry"] = hasOngoingEntry
 	session.Data["OngoingEntry"] = ongoingEntry
+	session.Data["EntryStatisticsWholeProject"] = entryStatisticsWholeProject
+	session.Data["EntryStatisticsToday"] = entryStatisticsToday
 	return c.Render(http.StatusOK, "project", session)
 }
 

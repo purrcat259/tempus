@@ -86,6 +86,9 @@ func main() {
 	funcs["round"] = func(f float64) float64 {
 		return math.Round(f*100) / 100
 	}
+	funcs["ceil"] = func(f float64) float64 {
+		return math.Ceil(f)
+	}
 
 	funcMap := template.FuncMap(funcs)
 

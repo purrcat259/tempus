@@ -61,6 +61,12 @@ func (pe *ProjectEntry) IsOngoing() bool {
 	return pe.CloseTime == nil
 }
 
+func (pe *ProjectEntry) OpenedToday() bool {
+	entryYear, entryMonth, entryDay := pe.OpenTime.Date()
+	year, month, day := time.Now().Date()
+	return entryYear == year && entryMonth == month && entryDay == day
+}
+
 func (pe *ProjectEntry) TimeTaken() (float64, float64, float64) {
 	// https://stackoverflow.com/a/40262557
 	if pe.IsOngoing() {
