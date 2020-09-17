@@ -2,6 +2,7 @@ package db
 
 import (
 	"errors"
+	"math"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -126,16 +127,22 @@ func CalculateEntryStatisticsToday(entries []ProjectEntry) EntryStatistics {
 }
 
 func CalculateEntriesStatistics(entries []ProjectEntry) EntryStatistics {
-	var hours, minutes, seconds float64
+	var totalSeconds float64
 	for _, entry := range entries {
 		if !entry.IsOngoing() {
-			hh, mm, ss := entry.TimeTaken()
-			hours += hh
-			minutes += mm
-			seconds += ss
+			entryLengthSeconds := entry.CloseTime.Sub(entry.OpenTime).Seconds()
+			totalSeconds += entryLengthSeconds
 		}
 	}
-	totalTime := TimeBreakdown{Hours: hours, Minutes: minutes, Seconds: seconds}
+
+	asMinutes := totalSeconds / 60.0
+	wholeMinutes, fracMinutes := math.Modf(asMinutes)
+	actualSeconds := fracMinutes * 60.0
+	asHours := wholeMinutes / 60.0
+	wholeHours, fracHours := math.Modf(asHours)
+	actualMinutes := fracHours * 60.0
+
+	totalTime := TimeBreakdown{Hours: wholeHours, Minutes: actualMinutes, Seconds: actualSeconds}
 	stats := EntryStatistics{TotalTime: totalTime, Count: len(entries)}
 	return stats
 }
