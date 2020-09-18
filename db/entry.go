@@ -3,6 +3,7 @@ package db
 import (
 	"errors"
 	"math"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -111,9 +112,16 @@ type TimeBreakdown struct {
 	Seconds float64
 }
 
+type TimeProportion struct {
+	EntryType         string
+	TimeBreakdown     TimeBreakdown
+	PercentageOfTotal float64
+}
+
 type EntryStatistics struct {
-	TotalTime TimeBreakdown
-	Count     int
+	EntryProportions []TimeProportion
+	TotalTime        TimeBreakdown
+	Count            int
 }
 
 func CalculateEntryStatisticsToday(entries []ProjectEntry) EntryStatistics {
@@ -126,23 +134,67 @@ func CalculateEntryStatisticsToday(entries []ProjectEntry) EntryStatistics {
 	return CalculateEntriesStatistics(todayEntryStatistics)
 }
 
-func CalculateEntriesStatistics(entries []ProjectEntry) EntryStatistics {
-	var totalSeconds float64
-	for _, entry := range entries {
-		if !entry.IsOngoing() {
-			entryLengthSeconds := entry.CloseTime.Sub(entry.OpenTime).Seconds()
-			totalSeconds += entryLengthSeconds
-		}
-	}
-
-	asMinutes := totalSeconds / 60.0
+func SecondsToHoursMinutesSeconds(seconds float64) (float64, float64, float64) {
+	asMinutes := seconds / 60.0
 	wholeMinutes, fracMinutes := math.Modf(asMinutes)
 	actualSeconds := fracMinutes * 60.0
 	asHours := wholeMinutes / 60.0
 	wholeHours, fracHours := math.Modf(asHours)
 	actualMinutes := fracHours * 60.0
+	return wholeHours, actualMinutes, actualSeconds
+}
+
+func CalculateEntriesStatistics(entries []ProjectEntry) EntryStatistics {
+	var totalSeconds float64
+	for _, entry := range entries {
+		var entryLengthSeconds float64 = 0.0
+		if !entry.IsOngoing() {
+			entryLengthSeconds = entry.CloseTime.Sub(entry.OpenTime).Seconds()
+		} else {
+			entryLengthSeconds = time.Now().Sub(entry.OpenTime).Seconds()
+		}
+		totalSeconds += entryLengthSeconds
+	}
+
+	wholeHours, actualMinutes, actualSeconds := SecondsToHoursMinutesSeconds(totalSeconds)
+
+	// Calculate proprotions
+	secondsByEntryType := make(map[string]float64)
+	for _, entry := range entries {
+		var entryLengthSeconds float64 = 0.0
+		if !entry.IsOngoing() {
+			entryLengthSeconds = entry.CloseTime.Sub(entry.OpenTime).Seconds()
+		} else {
+			entryLengthSeconds = time.Now().Sub(entry.OpenTime).Seconds()
+		}
+
+		if _, ok := secondsByEntryType[entry.EntryType]; ok {
+			secondsByEntryType[entry.EntryType] += entryLengthSeconds
+		} else {
+			secondsByEntryType[entry.EntryType] = entryLengthSeconds
+		}
+	}
+	var proportionsByEntryType []TimeProportion
+	for entryType, totalSecondsForEntryType := range secondsByEntryType {
+		hours, minutes, seconds := SecondsToHoursMinutesSeconds(totalSecondsForEntryType)
+		timeProportion := TimeProportion{
+			EntryType: entryType,
+			TimeBreakdown: TimeBreakdown{
+				Hours:   hours,
+				Minutes: minutes,
+				Seconds: seconds,
+			},
+			PercentageOfTotal: totalSecondsForEntryType / totalSeconds * 100.0,
+		}
+		proportionsByEntryType = append(proportionsByEntryType, timeProportion)
+	}
+
+	// Ensure they are in descending order
+	sort.SliceStable(proportionsByEntryType, func(i, j int) bool {
+		return proportionsByEntryType[i].PercentageOfTotal > proportionsByEntryType[j].PercentageOfTotal
+	})
 
 	totalTime := TimeBreakdown{Hours: wholeHours, Minutes: actualMinutes, Seconds: actualSeconds}
-	stats := EntryStatistics{TotalTime: totalTime, Count: len(entries)}
+	stats := EntryStatistics{TotalTime: totalTime, Count: len(entries), EntryProportions: proportionsByEntryType}
 	return stats
 }

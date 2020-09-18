@@ -57,11 +57,33 @@
             <p><b>Today</b>: {{ $entryStatsToday.Count }} Entries</p>
             <p>{{ ceil $entryStatsToday.TotalTime.Hours }} Hours, {{ ceil $entryStatsToday.TotalTime.Minutes }} Minutes,
                 {{ ceil $entryStatsToday.TotalTime.Seconds }} Seconds</p>
+            <ul>
+                {{ range $timeProportion := $entryStatsToday.EntryProportions }}
+                <li>{{ $timeProportion.EntryType }}:
+                    {{ round $timeProportion.PercentageOfTotal }}% <div style="max-width: 100px; width: 100px;">
+                        <div
+                            style="height: 5px; width: {{ $timeProportion.PercentageOfTotal }}%; background-color: black">
+                        </div>
+                    </div>
+                </li>
+                {{ end }}
+            </ul>
         </div>
         <div>
             <p><b>Whole Project</b>: {{ $entryStatsAll.Count }} Entries</p>
             <p>{{ ceil $entryStatsAll.TotalTime.Hours }} Hours, {{ ceil $entryStatsAll.TotalTime.Minutes }} Minutes,
                 {{ ceil $entryStatsAll.TotalTime.Seconds }} Seconds</p>
+            <ul>
+                {{ range $timeProportion := $entryStatsAll.EntryProportions }}
+                <li>{{ $timeProportion.EntryType }}:
+                    {{ round $timeProportion.PercentageOfTotal }}% <div style="max-width: 100px; width: 100px;">
+                        <div
+                            style="height: 5px; width: {{ $timeProportion.PercentageOfTotal }}%; background-color: black">
+                        </div>
+                    </div>
+                </li>
+                {{ end }}
+            </ul>
         </div>
     </div>
     <div>
